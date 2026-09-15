@@ -36,7 +36,14 @@ type StoredWeekEvent = {
 };
 
 const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-const colorOptions = ["#8f6668", "#5f6f74", "#7b6b52", "#775f7a", "#6d765b"];
+const colorOptions = ["#ad2e61", "#c85f8b", "#8e4764", "#b86f8d", "#744052"];
+const legacyColors: Record<string, string> = {
+  "#8f6668": colorOptions[0],
+  "#5f6f74": colorOptions[1],
+  "#7b6b52": colorOptions[2],
+  "#775f7a": colorOptions[3],
+  "#6d765b": colorOptions[4],
+};
 const startHour = 0;
 const endHour = 24;
 const storagePrefix = "weekly-scheduler:";
@@ -98,6 +105,14 @@ function timeValue(minute: number) {
   return `${Math.floor(minute / 60).toString().padStart(2, "0")}:${(minute % 60)
     .toString()
     .padStart(2, "0")}`;
+}
+
+function normalizeColor(color?: string) {
+  if (!color) {
+    return colorOptions[0];
+  }
+
+  return legacyColors[color.toLowerCase()] ?? color;
 }
 
 function defaultDraft(day?: number, startMinute?: number, endMinute?: number): ScheduleEvent {
@@ -169,7 +184,7 @@ export default function Home() {
         endDay: event.endDay ?? event.day ?? 0,
         startMinute: event.startMinute ?? 9 * 60,
         endMinute: event.endMinute ?? 10 * 60,
-        color: event.color ?? colorOptions[0],
+        color: normalizeColor(event.color),
       })),
     );
     setDraft(null);
@@ -223,7 +238,7 @@ export default function Home() {
           endDay: event.endDay ?? event.day ?? 0,
           startMinute: event.startMinute ?? 9 * 60,
           endMinute: event.endMinute ?? 10 * 60,
-          color: event.color ?? colorOptions[0],
+          color: normalizeColor(event.color),
         },
       }));
     });

@@ -1,13 +1,15 @@
 :root {
-  --background: #f6efed;
-  --paper: #fff9f7;
-  --ink: #4d3f3f;
-  --muted: #8b7777;
-  --line: #b99d9d;
-  --accent: #815a5d;
-  --accent-dark: #604145;
+  --background: #fff8fb;
+  --paper: #fffdfd;
+  --ink: #2c1720;
+  --muted: #8d6473;
+  --line: #efd5df;
+  --accent: #ad2e61;
+  --accent-dark: #7c2045;
+  --accent-soft: #f9e5ed;
+  --primary: #ce87a5;
   --panel: #ffffff;
-  --shadow: 0 18px 50px rgba(79, 56, 58, 0.13);
+  --shadow: 0 14px 36px rgba(124, 32, 69, 0.07);
 }
 
 * {
@@ -89,8 +91,8 @@ h2 {
 }
 
 .viewSwitch {
-  background: rgba(129, 90, 93, 0.1);
-  border: 1px solid rgba(129, 90, 93, 0.18);
+  background: var(--accent-soft);
+  border: 1px solid var(--line);
   border-radius: 8px;
   display: inline-flex;
   padding: 3px;
@@ -109,7 +111,7 @@ h2 {
 
 .viewSwitch button.active {
   background: var(--panel);
-  box-shadow: 0 1px 4px rgba(79, 56, 58, 0.14);
+  box-shadow: 0 1px 4px rgba(124, 32, 69, 0.12);
   color: var(--accent-dark);
 }
 
@@ -129,7 +131,7 @@ h2 {
 .iconButton {
   aspect-ratio: 1;
   background: var(--panel);
-  border-color: rgba(129, 90, 93, 0.18);
+  border-color: var(--line);
   justify-content: center;
   padding: 0;
   width: 42px;
@@ -138,18 +140,18 @@ h2 {
 .todayButton,
 .secondaryButton {
   background: var(--panel);
-  border-color: rgba(129, 90, 93, 0.2);
+  border-color: var(--line);
   color: var(--ink);
 }
 
 .primaryButton {
-  background: var(--accent);
+  background: var(--primary);
   color: white;
   font-weight: 800;
 }
 
 .primaryButton.active {
-  background: var(--accent-dark);
+  background: var(--accent);
 }
 
 .workspace {
@@ -198,14 +200,14 @@ h2 {
 }
 
 .monthCell.outsideMonth {
-  background: rgba(139, 119, 119, 0.05);
-  color: rgba(77, 63, 63, 0.45);
+  background: #fff9fb;
+  color: rgba(44, 23, 32, 0.42);
 }
 
 .monthCell:hover,
 .monthCell:focus-visible {
-  background: rgba(129, 90, 93, 0.08);
-  outline: 2px solid rgba(129, 90, 93, 0.4);
+  background: var(--accent-soft);
+  outline: 2px solid rgba(173, 46, 97, 0.38);
   outline-offset: -2px;
 }
 
@@ -233,7 +235,7 @@ h2 {
 }
 
 .monthEvent {
-  background: rgba(255, 255, 255, 0.72);
+  background: #fff;
   border-left: 3px solid;
   display: grid;
   gap: 1px;
@@ -260,7 +262,7 @@ h2 {
 
 .scheduleCard {
   background: var(--paper);
-  border: 1px solid rgba(129, 90, 93, 0.16);
+  border: 1px solid var(--line);
   border-radius: 8px;
   box-shadow: var(--shadow);
   overflow: auto;
@@ -299,7 +301,7 @@ h2 {
 }
 
 .gridCell.halfHour {
-  border-bottom-color: rgba(185, 157, 157, 0.4);
+  border-bottom-color: rgba(239, 213, 223, 0.62);
 }
 
 .dayHeader {
@@ -347,24 +349,24 @@ h2 {
 
 .gridCell.selectable:hover,
 .gridCell.selectable:focus-visible {
-  background: rgba(129, 90, 93, 0.1);
-  box-shadow: inset 0 0 0 2px rgba(129, 90, 93, 0.32);
+  background: var(--accent-soft);
+  box-shadow: inset 0 0 0 2px rgba(173, 46, 97, 0.3);
   outline: none;
 }
 
 .gridCell.selectedStart {
-  background: rgba(129, 90, 93, 0.18);
+  background: #f5d5e2;
   box-shadow: inset 0 0 0 2px var(--accent);
 }
 
 .gridCell.selectableEnd:hover,
 .gridCell.selectableEnd:focus-visible {
-  background: rgba(95, 111, 116, 0.14);
-  box-shadow: inset 0 0 0 2px #5f6f74;
+  background: #f7dce7;
+  box-shadow: inset 0 0 0 2px var(--accent);
 }
   
 .selectionPreview {
-  background: rgba(129, 90, 93, 0.88);
+  background: rgba(173, 46, 97, 0.9);
   border: 1px dashed rgba(255, 255, 255, 0.8);
   color: white;
   display: flex;
@@ -411,7 +413,7 @@ h2 {
 .eventBlock {
   border: 1px solid rgba(255, 255, 255, 0.55);
   border-radius: 0;
-  box-shadow: inset 0 0 0 1px rgba(77, 63, 63, 0.08);
+  box-shadow: inset 0 0 0 1px rgba(44, 23, 32, 0.08);
   color: white;
   display: flex;
   flex-direction: column;
@@ -471,7 +473,7 @@ h2 {
 .emptyPanel,
 .eventList {
   background: var(--panel);
-  border: 1px solid rgba(129, 90, 93, 0.16);
+  border: 1px solid var(--line);
   border-radius: 8px;
   box-shadow: var(--shadow);
   padding: 20px;
@@ -499,8 +501,8 @@ label {
 input,
 select,
 textarea {
-  background: #fbf7f5;
-  border: 1px solid rgba(129, 90, 93, 0.25);
+  background: #fffafd;
+  border: 1px solid var(--line);
   border-radius: 8px;
   color: var(--ink);
   min-height: 42px;
@@ -587,7 +589,7 @@ legend {
 
 .eventRow {
   align-items: center;
-  border-top: 1px solid rgba(129, 90, 93, 0.14);
+  border-top: 1px solid var(--line);
   display: grid;
   gap: 10px;
   grid-template-columns: 10px minmax(0, 1fr) 34px 34px;
@@ -616,8 +618,8 @@ legend {
 .eventRow button {
   align-items: center;
   aspect-ratio: 1;
-  background: #fbf7f5;
-  border: 1px solid rgba(129, 90, 93, 0.18);
+  background: #fffafd;
+  border: 1px solid var(--line);
   border-radius: 8px;
   color: var(--ink);
   display: inline-flex;
