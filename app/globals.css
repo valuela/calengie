@@ -280,8 +280,8 @@ h2 {
 }
 
 .calendarGrid {
-  --header-height: 68px;
-  --hour-height: 56px;
+  --header-height: 48px;
+  --hour-height: 30px;
   --time-column: 82px;
 
   display: grid;
@@ -371,11 +371,11 @@ h2 {
   color: white;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
   height: var(--hour-height);
   justify-content: center;
   margin: 2px;
-  padding: 10px;
+  padding: 4px 7px;
   pointer-events: none;
   position: absolute;
   text-transform: uppercase;
@@ -387,7 +387,7 @@ h2 {
   align-items: flex-start;
   border-style: solid;
   justify-content: flex-start;
-  padding: 18px 10px;
+  padding: 5px 7px;
 }
 
 .selectionPreview strong,
@@ -417,11 +417,11 @@ h2 {
   color: white;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 2px;
   justify-content: flex-start;
   margin: 2px;
   overflow: hidden;
-  padding: 18px 10px;
+  padding: 4px 7px;
   position: absolute;
   text-align: left;
   text-transform: uppercase;
@@ -432,7 +432,7 @@ h2 {
 .eventBlock strong {
   display: -webkit-box;
   font-size: clamp(0.74rem, 1vw, 0.94rem);
-  -webkit-line-clamp: 4;
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   line-height: 1.1;
   max-width: 100%;
@@ -452,7 +452,7 @@ h2 {
   display: -webkit-box;
   font-size: clamp(0.62rem, 0.75vw, 0.74rem);
   font-weight: 700;
-  -webkit-line-clamp: 4;
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   line-height: 1.25;
   margin: 0;
@@ -639,6 +639,29 @@ legend {
 
   .actions {
     justify-content: flex-start;
+  }
+}
+
+@media (min-width: 1121px) {
+  .shell {
+    padding: 18px;
+  }
+
+  .toolbar {
+    margin-bottom: 12px;
+  }
+
+  .weeklyCard {
+    padding: 16px;
+  }
+
+  .weeklyCard .scheduleTitle {
+    font-size: 1.55rem;
+    margin-bottom: 10px;
+  }
+
+  .weeklyCard .dayHeader {
+    gap: 2px;
   }
 }
 

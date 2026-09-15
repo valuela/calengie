@@ -477,7 +477,7 @@ export default function Home() {
         </section>
       ) : (
       <section className="workspace">
-        <div className="scheduleCard" aria-label="Weekly schedule preview">
+        <div className="scheduleCard weeklyCard" aria-label="Weekly schedule preview">
           <div className="scheduleTitle">Weekly Schedule</div>
           <div className="calendarGrid">
             <div className="cornerCell" />
@@ -539,7 +539,7 @@ export default function Home() {
                   style={{
                     left: `calc(var(--time-column) + ((100% - var(--time-column)) / 7 * ${segment.day}))`,
                     top: `calc(var(--header-height) + ${(segment.startMinute / 60)} * var(--hour-height))`,
-                    height: `max(32px, ${((segment.endMinute - segment.startMinute) / 60)} * var(--hour-height))`,
+                    height: `max(18px, ${((segment.endMinute - segment.startMinute) / 60)} * var(--hour-height))`,
                   }}
                 >
                   <strong>{index ? `${draft.title || "New Shift"} (cont.)` : draft.title || "New Shift"}</strong>
@@ -574,7 +574,7 @@ export default function Home() {
                     backgroundColor: event.color,
                     left: `calc(var(--time-column) + ((100% - var(--time-column)) / 7 * ${segment.day}))`,
                     top: `calc(var(--header-height) + ${top} * var(--hour-height))`,
-                    height: `max(32px, ${height} * var(--hour-height))`,
+                    height: `max(18px, ${height} * var(--hour-height))`,
                   }}
                 >
                   <strong>{segmentIndex ? `${event.title} (cont.)` : event.title}</strong>
