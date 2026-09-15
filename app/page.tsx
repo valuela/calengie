@@ -28,6 +28,13 @@ type SelectionStart = {
   minute: number;
 };
 
+type ViewMode = "week" | "month";
+
+type StoredWeekEvent = {
+  event: ScheduleEvent;
+  weekStart: Date;
+};
+
 const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 const colorOptions = ["#8f6668", "#5f6f74", "#7b6b52", "#775f7a", "#6d765b"];
 const startHour = 0;
@@ -64,6 +71,10 @@ function formatWeekRange(weekStart: Date) {
   }
 
   return `${startMonth} ${weekStart.getDate()} - ${endMonth} ${weekEnd.getDate()}, ${year}`;
+}
+
+function formatMonth(date: Date) {
+  return date.toLocaleDateString(undefined, { month: "long", year: "numeric" });
 }
 
 function formatDateLabel(date: Date) {
@@ -124,7 +135,10 @@ function eventSegments(event: ScheduleEvent) {
 
 export default function Home() {
   const [weekStart, setWeekStart] = useState<Date | null>(null);
+  const [monthAnchor, setMonthAnchor] = useState<Date | null>(null);
+  const [viewMode, setViewMode] = useState<ViewMode>("week");
   const [events, setEvents] = useState<ScheduleEvent[]>([]);
+  const [monthEvents, setMonthEvents] = useState<StoredWeekEvent[]>([]);
   const [draft, setDraft] = useState<ScheduleEvent | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [selectionStart, setSelectionStart] = useState<SelectionStart | null>(null);
@@ -132,7 +146,9 @@ export default function Home() {
   const [formError, setFormError] = useState("");
 
   useEffect(() => {
-    setWeekStart(startOfWeek(new Date()));
+    const today = new Date();
+    setWeekStart(startOfWeek(today));
+    setMonthAnchor(new Date(today.getFullYear(), today.getMonth(), 1));
   }, []);
 
   const storageKey = weekStart ? `${storagePrefix}${toDateKey(weekStart)}` : "";
@@ -171,6 +187,50 @@ export default function Home() {
     window.localStorage.setItem(storageKey, JSON.stringify(events));
   }, [events, storageKey]);
 
+  const monthDates = useMemo(() => {
+    if (!monthAnchor) {
+      return [];
+    }
+
+    const gridStart = startOfWeek(new Date(monthAnchor.getFullYear(), monthAnchor.getMonth(), 1));
+    return Array.from({ length: 42 }, (_, index) => addDays(gridStart, index));
+  }, [monthAnchor]);
+
+  useEffect(() => {
+    if (viewMode !== "month" || !monthDates.length) {
+      return;
+    }
+
+    const weekKeys = Array.from(
+      new Map(
+        monthDates.map((date) => {
+          const start = startOfWeek(date);
+          return [toDateKey(start), start] as const;
+        }),
+      ).values(),
+    );
+
+    const stored = weekKeys.flatMap((start) => {
+      const saved = window.localStorage.getItem(`${storagePrefix}${toDateKey(start)}`);
+      const parsed = saved ? (JSON.parse(saved) as Partial<ScheduleEvent>[]) : [];
+      return parsed.map((event) => ({
+        weekStart: start,
+        event: {
+          id: event.id ?? crypto.randomUUID(),
+          title: event.title ?? "",
+          description: event.description ?? "",
+          day: event.day ?? 0,
+          endDay: event.endDay ?? event.day ?? 0,
+          startMinute: event.startMinute ?? 9 * 60,
+          endMinute: event.endMinute ?? 10 * 60,
+          color: event.color ?? colorOptions[0],
+        },
+      }));
+    });
+
+    setMonthEvents(stored);
+  }, [events, monthDates, viewMode]);
+
   const weekDates = useMemo(() => {
     if (!weekStart) {
       return [];
@@ -188,15 +248,35 @@ export default function Home() {
     [events],
   );
 
-  if (!weekStart) {
+  if (!weekStart || !monthAnchor) {
     return <main className="loading">Loading schedule...</main>;
   }
 
-  function moveWeek(amount: number) {
+  function movePeriod(amount: number) {
+    if (viewMode === "month") {
+      setMonthAnchor(
+        (current) => current && new Date(current.getFullYear(), current.getMonth() + amount, 1),
+      );
+      return;
+    }
+
     setWeekStart((current) => (current ? addDays(current, amount * 7) : current));
   }
 
+  function goToToday() {
+    const today = new Date();
+    setWeekStart(startOfWeek(today));
+    setMonthAnchor(new Date(today.getFullYear(), today.getMonth(), 1));
+  }
+
+  function openDate(date: Date) {
+    setWeekStart(startOfWeek(date));
+    setViewMode("week");
+    cancelCreate();
+  }
+
   function beginCreate() {
+    setViewMode("week");
     setEditingId(null);
     setDraft(null);
     setSelectionStart(null);
@@ -305,18 +385,22 @@ export default function Home() {
       <section className="toolbar" aria-label="Schedule controls">
         <div>
           <p className="eyebrow">Weekly Schedule</p>
-          <h1>{formatWeekRange(weekStart)}</h1>
+          <h1>{viewMode === "week" ? formatWeekRange(weekStart) : formatMonth(monthAnchor)}</h1>
         </div>
 
         <div className="actions">
-          <button type="button" className="iconButton" onClick={() => moveWeek(-1)} aria-label="Previous week">
+          <div className="viewSwitch" aria-label="Calendar view">
+            <button type="button" className={viewMode === "week" ? "active" : ""} onClick={() => setViewMode("week")}>Week</button>
+            <button type="button" className={viewMode === "month" ? "active" : ""} onClick={() => setViewMode("month")}>Month</button>
+          </div>
+          <button type="button" className="iconButton" onClick={() => movePeriod(-1)} aria-label={`Previous ${viewMode}`}>
             <ChevronLeft size={18} />
           </button>
-          <button type="button" className="todayButton" onClick={() => setWeekStart(startOfWeek(new Date()))}>
+          <button type="button" className="todayButton" onClick={goToToday}>
             <CalendarDays size={16} />
             Today
           </button>
-          <button type="button" className="iconButton" onClick={() => moveWeek(1)} aria-label="Next week">
+          <button type="button" className="iconButton" onClick={() => movePeriod(1)} aria-label={`Next ${viewMode}`}>
             <ChevronRight size={18} />
           </button>
           <button type="button" className={isSelectingSlot ? "primaryButton active" : "primaryButton"} onClick={beginCreate}>
@@ -329,6 +413,54 @@ export default function Home() {
         </div>
       </section>
 
+      {viewMode === "month" ? (
+        <section className="monthWorkspace">
+          <div className="scheduleCard monthCard" aria-label="Monthly schedule">
+            <div className="scheduleTitle">{formatMonth(monthAnchor)}</div>
+            <div className="monthGrid">
+              {days.map((day) => <div className="monthDayHeader" key={day}>{day}</div>)}
+              {monthDates.map((date) => {
+                const dateKey = toDateKey(date);
+                const items = monthEvents.flatMap(({ event, weekStart: storedWeekStart }) => {
+                  const startDate = addDays(storedWeekStart, event.day);
+                  const endDate = addDays(storedWeekStart, event.endDay);
+                  const results = [];
+                  if (toDateKey(startDate) === dateKey) {
+                    results.push({ event, continuation: false });
+                  }
+                  if (event.endDay !== event.day && toDateKey(endDate) === dateKey) {
+                    results.push({ event, continuation: true });
+                  }
+                  return results;
+                });
+                const isCurrentMonth = date.getMonth() === monthAnchor.getMonth();
+                const isToday = toDateKey(date) === toDateKey(new Date());
+
+                return (
+                  <button
+                    type="button"
+                    className={["monthCell", isCurrentMonth ? "" : "outsideMonth", isToday ? "today" : ""].filter(Boolean).join(" ")}
+                    key={dateKey}
+                    onClick={() => openDate(date)}
+                    aria-label={`Open week of ${date.toLocaleDateString()}`}
+                  >
+                    <span className="monthDate">{date.getDate()}</span>
+                    <div className="monthItems">
+                      {items.slice(0, 3).map(({ event, continuation }, index) => (
+                        <span className="monthEvent" style={{ borderLeftColor: event.color }} key={`${event.id}-${index}`}>
+                          <strong>{event.title}</strong>
+                          <small>{continuation ? "Until " : ""}{formatTime(continuation ? event.endMinute : event.startMinute)}</small>
+                        </span>
+                      ))}
+                      {items.length > 3 ? <small className="moreEvents">+{items.length - 3} more</small> : null}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+      ) : (
       <section className="workspace">
         <div className="scheduleCard" aria-label="Weekly schedule preview">
           <div className="scheduleTitle">Weekly Schedule</div>
@@ -617,6 +749,7 @@ export default function Home() {
           </div>
         </aside>
       </section>
+      )}
     </main>
   );
 }

@@ -88,6 +88,31 @@ h2 {
   justify-content: flex-end;
 }
 
+.viewSwitch {
+  background: rgba(129, 90, 93, 0.1);
+  border: 1px solid rgba(129, 90, 93, 0.18);
+  border-radius: 8px;
+  display: inline-flex;
+  padding: 3px;
+}
+
+.viewSwitch button {
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 800;
+  min-height: 34px;
+  padding: 0 12px;
+}
+
+.viewSwitch button.active {
+  background: var(--panel);
+  box-shadow: 0 1px 4px rgba(79, 56, 58, 0.14);
+  color: var(--accent-dark);
+}
+
 .iconButton,
 .todayButton,
 .primaryButton,
@@ -133,6 +158,104 @@ h2 {
   grid-template-columns: minmax(760px, 1fr) 360px;
   margin: 0 auto;
   max-width: 1440px;
+}
+
+.monthWorkspace {
+  margin: 0 auto;
+  max-width: 1440px;
+}
+
+.monthGrid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(120px, 1fr));
+  min-width: 840px;
+}
+
+.monthDayHeader {
+  border-bottom: 1px solid var(--line);
+  color: var(--accent-dark);
+  font-size: 0.78rem;
+  font-weight: 900;
+  padding: 10px;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.monthCell {
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  border-right: 1px solid var(--line);
+  color: var(--ink);
+  min-height: 132px;
+  overflow: hidden;
+  padding: 9px;
+  text-align: left;
+}
+
+.monthCell:nth-child(7n + 1) {
+  border-left: 1px solid var(--line);
+}
+
+.monthCell.outsideMonth {
+  background: rgba(139, 119, 119, 0.05);
+  color: rgba(77, 63, 63, 0.45);
+}
+
+.monthCell:hover,
+.monthCell:focus-visible {
+  background: rgba(129, 90, 93, 0.08);
+  outline: 2px solid rgba(129, 90, 93, 0.4);
+  outline-offset: -2px;
+}
+
+.monthDate {
+  align-items: center;
+  display: inline-flex;
+  font-size: 0.78rem;
+  font-weight: 900;
+  height: 26px;
+  justify-content: center;
+  width: 26px;
+}
+
+.monthCell.today .monthDate {
+  background: var(--accent);
+  border-radius: 50%;
+  color: white;
+}
+
+.monthItems {
+  display: grid;
+  gap: 4px;
+  margin-top: 4px;
+  min-width: 0;
+}
+
+.monthEvent {
+  background: rgba(255, 255, 255, 0.72);
+  border-left: 3px solid;
+  display: grid;
+  gap: 1px;
+  min-width: 0;
+  padding: 4px 6px;
+}
+
+.monthEvent strong,
+.monthEvent small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.monthEvent strong {
+  font-size: 0.7rem;
+}
+
+.monthEvent small,
+.moreEvents {
+  color: var(--muted);
+  font-size: 0.64rem;
 }
 
 .scheduleCard {
