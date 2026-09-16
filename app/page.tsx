@@ -10,7 +10,7 @@ import {
   Printer,
   Trash2,
 } from "lucide-react";
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { FormEvent, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 type ScheduleEvent = {
   id: string;
@@ -155,6 +155,7 @@ function eventSegments(event: ScheduleEvent) {
 }
 
 export default function Home() {
+  const calendarGridRef = useRef<HTMLDivElement>(null);
   const [weekStart, setWeekStart] = useState<Date | null>(null);
   const [monthAnchor, setMonthAnchor] = useState<Date | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>("week");
@@ -165,6 +166,29 @@ export default function Home() {
   const [selectionStart, setSelectionStart] = useState<SelectionStart | null>(null);
   const [isSelectingSlot, setIsSelectingSlot] = useState(false);
   const [formError, setFormError] = useState("");
+
+  useLayoutEffect(() => {
+    if (viewMode !== "week") {
+      return;
+    }
+
+    const fitCalendarToViewport = () => {
+      const grid = calendarGridRef.current;
+      if (!grid) {
+        return;
+      }
+
+      const headerHeight = 48;
+      const bottomGap = window.innerWidth > 1120 ? 18 : 16;
+      const availableHeight = window.innerHeight - grid.getBoundingClientRect().top - bottomGap;
+      const hourHeight = Math.max(14, Math.min(38, (availableHeight - headerHeight) / 24));
+      grid.style.setProperty("--hour-height", `${hourHeight}px`);
+    };
+
+    fitCalendarToViewport();
+    window.addEventListener("resize", fitCalendarToViewport);
+    return () => window.removeEventListener("resize", fitCalendarToViewport);
+  }, [viewMode, weekStart]);
 
   useEffect(() => {
     const today = new Date();
@@ -485,7 +509,7 @@ export default function Home() {
       <section className="workspace">
         <div className="scheduleCard weeklyCard" aria-label="Weekly schedule preview">
           <div className="scheduleTitle">Weekly Schedule</div>
-          <div className="calendarGrid">
+          <div className="calendarGrid" ref={calendarGridRef}>
             <div className="cornerCell" />
             {days.map((day, index) => (
               <div className="dayHeader" key={day}>
@@ -540,12 +564,12 @@ export default function Home() {
             {draft && !editingId ? (
               eventSegments(draft).map((segment, index) => (
                 <div
-                  className="selectionPreview range"
+                  className={`selectionPreview range ${segment.endMinute - segment.startMinute <= 30 ? "compactEvent" : ""}`}
                   key={`draft-${segment.day}`}
                   style={{
                     left: `calc(var(--time-column) + ((100% - var(--time-column)) / 7 * ${segment.day}))`,
                     top: `calc(var(--header-height) + ${(segment.startMinute / 60)} * var(--hour-height))`,
-                    height: `max(18px, ${((segment.endMinute - segment.startMinute) / 60)} * var(--hour-height))`,
+                    height: `max(1px, calc(${((segment.endMinute - segment.startMinute) / 60)} * var(--hour-height) - 3px))`,
                   }}
                 >
                   <strong>{index ? `${draft.title || "New Shift"} (cont.)` : draft.title || "New Shift"}</strong>
@@ -573,14 +597,14 @@ export default function Home() {
                 return (
                 <button
                   type="button"
-                  className="eventBlock"
+                  className={`eventBlock ${segment.endMinute - segment.startMinute <= 30 ? "compactEvent" : ""}`}
                   key={`${event.id}-${segment.day}`}
                   onClick={() => beginEdit(event)}
                   style={{
                     backgroundColor: event.color,
                     left: `calc(var(--time-column) + ((100% - var(--time-column)) / 7 * ${segment.day}))`,
                     top: `calc(var(--header-height) + ${top} * var(--hour-height))`,
-                    height: `max(18px, ${height} * var(--hour-height))`,
+                    height: `max(1px, calc(${height} * var(--hour-height) - 3px))`,
                   }}
                 >
                   <strong>{segmentIndex ? `${event.title} (cont.)` : event.title}</strong>
