@@ -96,6 +96,12 @@ function formatTime(minute: number) {
   return `${displayHour}:${minutes.toString().padStart(2, "0")} ${period}`;
 }
 
+function formatHour(minute: number) {
+  const hour = Math.floor(minute / 60) % 24;
+  const period = hour >= 12 ? "PM" : "AM";
+  return `${hour % 12 || 12} ${period}`;
+}
+
 function parseTime(value: string) {
   const [hours, minutes] = value.split(":").map(Number);
   return hours * 60 + minutes;
@@ -488,11 +494,11 @@ export default function Home() {
               </div>
             ))}
 
-            {Array.from({ length: endHour - startHour + 1 }, (_, rowIndex) => {
+            {Array.from({ length: endHour - startHour }, (_, rowIndex) => {
               const hour = startHour + rowIndex;
               return (
-                <div className="timeCell" style={{ gridRow: rowIndex * 2 + 2 }} key={hour}>
-                  {formatTime(hour * 60).replace(":00 ", "\n")}
+                <div className="timeCell" style={{ gridRow: `${rowIndex * 2 + 2} / span 2` }} key={hour}>
+                  {formatHour(hour * 60)}
                 </div>
               );
             })}
@@ -516,7 +522,7 @@ export default function Home() {
                     "selectable",
                     isStart ? "selectedStart" : "",
                     isSelectableEnd ? "selectableEnd" : "",
-                    slotIndex % 2 ? "halfHour" : "",
+                    slotIndex % 2 === 0 ? "halfHour" : "",
                   ]
                     .filter(Boolean)
                     .join(" ")}

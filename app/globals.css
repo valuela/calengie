@@ -281,7 +281,7 @@ h2 {
 
 .calendarGrid {
   --header-height: 48px;
-  --hour-height: 30px;
+  --hour-height: clamp(18px, calc((100dvh - 276px) / 24), 34px);
   --time-column: 82px;
 
   display: grid;
@@ -334,7 +334,7 @@ h2 {
   justify-content: center;
   line-height: 1.1;
   text-align: center;
-  white-space: pre-line;
+  white-space: nowrap;
   font-size: 0.72rem;
 }
 
@@ -639,6 +639,10 @@ legend {
 
   .actions {
     justify-content: flex-start;
+  }
+
+  .calendarGrid {
+    --hour-height: clamp(18px, calc((100dvh - 390px) / 24), 30px);
   }
 }
 
